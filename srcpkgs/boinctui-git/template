@@ -1,0 +1,20 @@
+# Template file for 'boinctui-git'
+pkgname=boinctui-git
+version=cbe2d32d182668555e3bfe3f14c2454002a7350f
+revision=1
+wrksrc="boinctui-${version}"
+build_style=gnu-configure
+configure_args="--without-gnutls"
+hostmakedepends="autoconf git"
+makedepends="ncurses-devel libressl-devel expat-devel"
+depends="expat glibc ncurses-libs libstdc++ libgcc libressl"
+short_desc="Curses based fullscreen BOINC manager"
+maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/suleman1971/boinctui"
+distfiles="https://github.com/suleman1971/boinctui/archive/${version}.tar.gz"
+checksum=d08079542f2805dda99aaf760e295772e18d9caf0004f73036cc97cbcedeba5a
+
+pre_configure() {
+	autoconf
+}

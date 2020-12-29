@@ -1,0 +1,1 @@
+[ -f /etc/bitwarden_rs.env ] && . /etc/bitwarden_rs.env

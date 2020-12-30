@@ -2,38 +2,32 @@
 pkgname=bitwarden_rs
 version=1.18.0
 revision=1
+build_style=cargo
 wrksrc="bitwarden_rs-${version}"
 configure_args="--locked --features sqlite,mysql,postgresql"
-hostmakedepends="rustup pkg-config"
+hostmakedepends="pkg-config"
 makedepends="libressl-devel libmysqlclient-devel postgresql-libs-devel sqlite-devel"
-depends="mysql postgresql-libs sqlite"
-short_desc="An unofficial lightweight implementation of the bitwarden-server
-using rust and postgresql. Does NOT include the web-interface"
+short_desc="Unofficial lightweight implementation of the bitwarden-server using
+rust and postgresql. Does NOT include the web-interface"
 maintainer="Joel Beckmeyer <joel@beckmeyer.us>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/dani-garcia/bitwarden_rs"
 distfiles="https://github.com/dani-garcia/bitwarden_rs/archive/${version}.tar.gz"
 conf_files="/etc/bitwarden_rs.env"
-system_accounts="_bitwarden_rs"
+make_dirs="/var/lib/bitwarden_rs 0750 _bitwarden_rs _bitwarden_rs"
+_bitwarden_rs_homedir="/var/lib/bitwarden_rs"
 checksum=a1412849610f8305d9807f44c685140c8bf22b2bc72ea247874670a0ed9de547
+system_accounts="_bitwarden_rs"
 
 do_configure() {
-  sed -i 's,# DATA_FOLDER=data,DATA_FOLDER=/var/lib/bitwarden_rs,
-  s,web-vault/,/usr/share/bitwarden_rs-web,
-  s,# WEB_VAULT_ENABLED=true,WEB_VAULT_ENABLED=false,
-  s,/path/to/log,/var/log/bitwarden_rs.log,
-  /^# ROCKET_TLS/a ROCKET_LIMITS={json=10485760}' .env.template
+	sed -i 's,# DATA_FOLDER=data,DATA_FOLDER=/var/lib/bitwarden_rs,
+	s,web-vault/,/usr/share/bitwarden_rs-web,
+	s,# WEB_VAULT_ENABLED=true,WEB_VAULT_ENABLED=false,
+	s,/path/to/log,/var/log/bitwarden_rs.log,
+	/^# ROCKET_TLS/a ROCKET_LIMITS={json=10485760}' .env.template
 }
 
-do_build() {
-	cd $wrksrc
-  rustup-init -yq --profile minimal
-	source /host/cargo/env
-  BWRS_VERSION="$version" cargo build --release --locked --features sqlite,mysql,postgresql
-}
-
-do_install() {
-  vconf .env.template bitwarden_rs.env
-  vbin target/release/bitwarden_rs
+post_install() {
+	vconf .env.template bitwarden_rs.env
 	vsv bitwarden_rs
 }
